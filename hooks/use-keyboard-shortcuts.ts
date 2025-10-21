@@ -14,6 +14,15 @@ export interface KeyboardShortcut {
   disabled?: boolean;
 }
 
+export interface ShortcutDefinition {
+  key: string;
+  ctrlKey?: boolean;
+  altKey?: boolean;
+  shiftKey?: boolean;
+  metaKey?: boolean;
+  description: string;
+}
+
 interface UseKeyboardShortcutsOptions {
   shortcuts: KeyboardShortcut[];
   enabled?: boolean;
@@ -31,7 +40,8 @@ export function useKeyboardShortcuts({
   const shortcutsRef = useRef(shortcuts);
   shortcutsRef.current = shortcuts;
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+  const handleKeyDown = useCallback((event: Event) => {
+    const keyboardEvent = event as KeyboardEvent;
     if (!enabled) return;
 
     // Don't trigger shortcuts when user is typing in inputs
@@ -47,18 +57,18 @@ export function useKeyboardShortcuts({
     const matchingShortcut = shortcutsRef.current.find(shortcut => {
       if (shortcut.disabled) return false;
 
-      const keyMatches = shortcut.key.toLowerCase() === event.key.toLowerCase();
-      const ctrlMatches = !!shortcut.ctrlKey === event.ctrlKey;
-      const altMatches = !!shortcut.altKey === event.altKey;
-      const shiftMatches = !!shortcut.shiftKey === event.shiftKey;
-      const metaMatches = !!shortcut.metaKey === event.metaKey;
+      const keyMatches = shortcut.key.toLowerCase() === keyboardEvent.key.toLowerCase();
+      const ctrlMatches = !!shortcut.ctrlKey === keyboardEvent.ctrlKey;
+      const altMatches = !!shortcut.altKey === keyboardEvent.altKey;
+      const shiftMatches = !!shortcut.shiftKey === keyboardEvent.shiftKey;
+      const metaMatches = !!shortcut.metaKey === keyboardEvent.metaKey;
 
       return keyMatches && ctrlMatches && altMatches && shiftMatches && metaMatches;
     });
 
     if (matchingShortcut) {
       if (matchingShortcut.preventDefault !== false) {
-        event.preventDefault();
+        keyboardEvent.preventDefault();
       }
       matchingShortcut.action();
     }
@@ -81,7 +91,7 @@ export function useKeyboardShortcuts({
 /**
  * Format keyboard shortcut for display
  */
-export function formatShortcut(shortcut: KeyboardShortcut): string {
+export function formatShortcut(shortcut: ShortcutDefinition | KeyboardShortcut): string {
   const parts: string[] = [];
   
   if (shortcut.ctrlKey) parts.push('Ctrl');

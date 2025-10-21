@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -136,7 +137,7 @@ export function EnergyReport({
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <img src="/api/placeholder/120/40" alt="Energeia Logo" className="h-10" />
+          <Image src="/api/placeholder/120/40" alt="Energeia Logo" className="h-10" width={120} height={40} />
         </div>
       </div>
 

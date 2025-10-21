@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { useAuthStore } from '@/lib/state/auth';
 import { ReportPersistenceService } from '@/lib/services/report-persistence';
 import { ReportSyncService, SyncNotification } from '@/lib/services/report-sync';
@@ -183,7 +184,7 @@ export function CustomizableEnergyReport({
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <img src="/api/placeholder/120/40" alt="Energeia Logo" className="h-10" />
+          <Image src="/api/placeholder/120/40" alt="Energeia Logo" className="h-10" width={120} height={40} />
         </div>
       </div>
 

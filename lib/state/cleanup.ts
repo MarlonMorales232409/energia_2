@@ -202,7 +202,7 @@ export class StoreCleanupManager {
       const uiState = useUIStore.getState();
       const storedPreferences = LocalStorageManager.getUserPreferences();
       
-      if (storedPreferences && uiState.preferences.sidebarCollapsed !== (storedPreferences as any).sidebarCollapsed) {
+      if (storedPreferences && uiState.preferences.sidebarCollapsed !== (storedPreferences as { sidebarCollapsed?: boolean }).sidebarCollapsed) {
         issues.push('UI preferences inconsistent between store and localStorage');
       }
 

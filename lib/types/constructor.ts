@@ -21,6 +21,7 @@ export interface ChartComponent {
   id: string;
   type: ChartComponentType;
   columnIndex: number;
+  order?: number;
   config: ChartConfig;
   dataSource: DataSource;
 }
@@ -41,7 +42,7 @@ export interface ChartConfig {
   colors: string[];
   showLegend: boolean;
   showTooltip: boolean;
-  customOptions?: Record<string, any>;
+  customOptions?: Record<string, unknown>;
 }
 
 export interface DataSource {
@@ -49,7 +50,7 @@ export interface DataSource {
   name: string;
   type: 'energy-generation' | 'demand' | 'cost' | 'efficiency' | 'custom';
   fields: DataField[];
-  sampleData: any[];
+  sampleData: Record<string, unknown>[];
 }
 
 export interface DataField {

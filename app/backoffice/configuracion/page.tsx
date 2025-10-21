@@ -39,7 +39,7 @@ export default function BackofficeConfiguracionPage() {
       localStorage.setItem('app_settings', JSON.stringify(settings));
       
       toast.success('Configuración guardada');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Error al guardar configuración');
     } finally {
       setIsLoading(false);
@@ -52,7 +52,7 @@ export default function BackofficeConfiguracionPage() {
       await SimulationService.simulateAuth('', '', 'login');
       resetMockData();
       toast.success('Datos reiniciados');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Error al reiniciar datos');
     } finally {
       setIsLoading(false);

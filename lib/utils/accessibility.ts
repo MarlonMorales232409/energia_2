@@ -83,7 +83,7 @@ export function isActivationKey(key: string): boolean {
 }
 
 export function isNavigationKey(key: string): boolean {
-  return [
+  const navigationKeys = [
     KeyboardKeys.ARROW_UP,
     KeyboardKeys.ARROW_DOWN,
     KeyboardKeys.ARROW_LEFT,
@@ -92,7 +92,8 @@ export function isNavigationKey(key: string): boolean {
     KeyboardKeys.END,
     KeyboardKeys.PAGE_UP,
     KeyboardKeys.PAGE_DOWN,
-  ].includes(key as any);
+  ] as const;
+  return navigationKeys.includes(key as (typeof navigationKeys)[number]);
 }
 
 // Form validation messages
@@ -121,7 +122,7 @@ export function getValidationMessage(field: string, error: string): string {
 }
 
 // Color contrast utilities
-export function getContrastRatio(color1: string, color2: string): number {
+export function getContrastRatio(_color1: string, _color2: string): number {
   // Simplified contrast ratio calculation
   // In a real implementation, you'd convert colors to RGB and calculate luminance
   return 4.5; // Placeholder - should meet WCAG AA standards

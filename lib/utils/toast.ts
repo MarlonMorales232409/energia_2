@@ -1,5 +1,4 @@
 import { toast } from 'sonner';
-import { SimulationManager } from '../mock/simulators/delays';
 
 export interface ToastOptions {
   duration?: number;
@@ -51,7 +50,7 @@ export class ToastManager {
   }
 
   // Loading notifications with promise handling
-  static loading(message: string, promise?: Promise<any>) {
+  static loading(message: string, promise?: Promise<unknown>) {
     if (promise) {
       return toast.promise(promise, {
         loading: message,

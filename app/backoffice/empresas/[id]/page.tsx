@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { 
   ArrowLeft, Building2, Users, FileText, Calendar, Mail, Phone, Edit, Plus, 
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Company, User, ReportData } from '@/lib/types';
@@ -48,11 +48,7 @@ export default function CompanyDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadCompanyData();
-  }, [companyId]);
-
-  const loadCompanyData = async () => {
+  const loadCompanyData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
@@ -122,12 +118,16 @@ export default function CompanyDetailPage() {
         reports: sortedReports,
         analytics,
       });
-    } catch (err) {
+    } catch (_err) {
       setError('Error al cargar los datos de la empresa');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [companyId]);
+
+  useEffect(() => {
+    loadCompanyData();
+  }, [loadCompanyData]);
 
   const formatDate = (dateString: string) => {
     const [year, month] = dateString.split('-');

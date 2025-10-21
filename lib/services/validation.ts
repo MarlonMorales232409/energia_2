@@ -340,9 +340,9 @@ export class ReportValidationService {
       }
     });
 
-    // Separate errors from warnings (for now, all are errors)
-    const errors = allErrors.filter(error => error.type !== 'warning');
-    const warnings = allErrors.filter(error => error.type === 'warning');
+    // For now, all are errors (no warnings)
+    const errors = allErrors;
+    const warnings: ValidationError[] = [];
 
     return {
       isValid: errors.length === 0,

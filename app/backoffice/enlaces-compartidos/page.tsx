@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Share2, Search, MoreHorizontal, Copy, Eye, Trash2, ExternalLink } from 'lucide-react';
+import { Share2, Search, MoreHorizontal, Copy, Trash2, ExternalLink } from 'lucide-react';
 import { SharedLink, User, Company } from '@/lib/types';
 import { getMockData } from '@/lib/mock/data/seeds';
 import { useToast } from '@/lib/utils/toast';
@@ -34,11 +34,7 @@ export default function BackofficeEnlacesCompartidosPage() {
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       await SimulationService.simulateDataFetch(() => Promise.resolve(), 'data_fetch');
@@ -48,12 +44,16 @@ export default function BackofficeEnlacesCompartidosPage() {
         setUsers(mockData.users);
         setCompanies(mockData.companies);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Error al cargar enlaces compartidos');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const filteredLinks = sharedLinks.filter(link => {
     const creator = users.find(u => u.id === link.createdBy);

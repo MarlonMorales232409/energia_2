@@ -4,6 +4,11 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'r
 import { ReportChart } from './report-chart';
 import { ReportData } from '@/lib/types';
 
+interface GroupedDemandData {
+  month: string;
+  [period: string]: string | number;
+}
+
 interface DemandTrendChartProps {
   data: ReportData['mobileDemand'] | Array<ReportData['mobileDemand'][0] & { reportPeriod?: string }>;
   title?: string;
@@ -34,14 +39,16 @@ export function DemandTrendChart({
   
   if (compareMode && Array.isArray(data) && data.length > 0 && 'reportPeriod' in data[0]) {
     // Modo comparación con múltiples períodos
-    const groupedData = new Map<string, any>();
+    const groupedData = new Map<string, GroupedDemandData>();
     
     (data as Array<ReportData['mobileDemand'][0] & { reportPeriod: string }>).forEach(item => {
       if (!groupedData.has(item.month)) {
         groupedData.set(item.month, { month: item.month });
       }
       const monthData = groupedData.get(item.month);
-      monthData[item.reportPeriod] = item.demand;
+      if (monthData) {
+        monthData[item.reportPeriod] = item.demand;
+      }
     });
     
     chartData = Array.from(groupedData.values()).sort((a, b) => a.month.localeCompare(b.month));
@@ -53,7 +60,7 @@ export function DemandTrendChart({
     });
     
     chartData = Array.from(allMonths).sort().map(month => {
-      const dataPoint: any = { month };
+      const dataPoint: GroupedDemandData = { month };
       multipleSeries.forEach(series => {
         const seriesData = series.data.find(item => item.month === month);
         dataPoint[series.name] = seriesData?.demand || 0;

@@ -56,14 +56,13 @@ export function usePerformanceOptimization() {
     []
   );
 
-  // Virtual scrolling helper for large lists
-  const useVirtualScrolling = useCallback((
-    items: any[],
+  // Virtual scrolling calculator for large lists
+  const calculateVirtualScrolling = useCallback((
+    items: unknown[],
     itemHeight: number,
-    containerHeight: number
+    containerHeight: number,
+    scrollTop: number
   ) => {
-    const [scrollTop, setScrollTop] = useState(0);
-    
     const visibleStart = Math.floor(scrollTop / itemHeight);
     const visibleEnd = Math.min(
       visibleStart + Math.ceil(containerHeight / itemHeight) + 1,
@@ -78,78 +77,64 @@ export function usePerformanceOptimization() {
       visibleItems,
       totalHeight,
       offsetY,
-      setScrollTop,
+      visibleStart,
+      visibleEnd,
     };
   }, []);
 
   // Memoization helper for expensive calculations
-  const useMemoizedCalculation = useCallback(<T>(
+  const createMemoizedCalculation = useCallback(<T>(
     calculation: () => T,
-    dependencies: any[]
+    dependencies: unknown[]
   ): T => {
-    return useMemo(calculation, dependencies);
+    // This function returns a factory that should be used with useMemo at the component level
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return calculation();
   }, []);
 
-  // Lazy loading helper for components
-  const useLazyLoading = useCallback((
+  // Intersection observer factory for lazy loading
+  const createIntersectionObserver = useCallback((
+    callback: (isVisible: boolean) => void,
     threshold = 0.1,
     rootMargin = '50px'
   ) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const elementRef = useRef<HTMLElement>(null);
-
-    useEffect(() => {
-      const element = elementRef.current;
-      if (!element) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          setIsVisible(entry.isIntersecting);
-        },
-        { threshold, rootMargin }
-      );
-
-      observer.observe(element);
-
-      return () => {
-        observer.unobserve(element);
-      };
-    }, [threshold, rootMargin]);
-
-    return { isVisible, elementRef };
+    return new IntersectionObserver(
+      ([entry]) => {
+        callback(entry.isIntersecting);
+      },
+      { threshold, rootMargin }
+    );
   }, []);
 
   // Batch updates helper
-  const useBatchUpdates = useCallback(() => {
-    const pendingUpdates = useRef<(() => void)[]>([]);
+  const pendingUpdatesRef = useRef<(() => void)[]>([]);
+  
+  const batchUpdate = useCallback((update: () => void) => {
+    pendingUpdatesRef.current.push(update);
     
-    const batchUpdate = useCallback((update: () => void) => {
-      pendingUpdates.current.push(update);
+    if (frameId.current) {
+      cancelAnimationFrame(frameId.current);
+    }
+    
+    frameId.current = requestAnimationFrame(() => {
+      const updates = pendingUpdatesRef.current;
+      pendingUpdatesRef.current = [];
       
-      if (frameId.current) {
-        cancelAnimationFrame(frameId.current);
-      }
-      
-      frameId.current = requestAnimationFrame(() => {
-        const updates = pendingUpdates.current;
-        pendingUpdates.current = [];
-        
-        updates.forEach(update => update());
-      });
-    }, []);
-
-    return { batchUpdate };
+      updates.forEach(updateFn => updateFn());
+    });
   }, []);
 
   // Memory usage monitoring (if available)
   useEffect(() => {
     if ('memory' in performance) {
       const updateMemoryUsage = () => {
-        const memory = (performance as any).memory;
-        setMetrics(prev => ({
-          ...prev,
-          memoryUsage: memory.usedJSHeapSize / 1024 / 1024, // MB
-        }));
+        const memory = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
+        if (memory) {
+          setMetrics(prev => ({
+            ...prev,
+            memoryUsage: memory.usedJSHeapSize / 1024 / 1024, // MB
+          }));
+        }
       };
 
       const interval = setInterval(updateMemoryUsage, 5000);
@@ -182,10 +167,10 @@ export function usePerformanceOptimization() {
     endMeasurement,
     debouncedUpdate,
     throttledUpdate,
-    useVirtualScrolling,
-    useMemoizedCalculation,
-    useLazyLoading,
-    useBatchUpdates,
+    calculateVirtualScrolling,
+    createMemoizedCalculation,
+    createIntersectionObserver,
+    batchUpdate,
     getPerformanceRecommendations,
   };
 }

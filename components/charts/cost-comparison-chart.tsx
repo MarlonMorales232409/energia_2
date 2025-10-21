@@ -40,12 +40,12 @@ export function CostComparisonChart({
     };
   });
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; color: string; name: string }>; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px]">
-          <p className="font-medium text-gray-900 mb-2">{formatXAxisLabel(label)}</p>
-          {payload.map((entry: any, index: number) => (
+          <p className="font-medium text-gray-900 mb-2">{formatXAxisLabel(label || '')}</p>
+          {payload.map((entry: { value: number; color: string; name: string }, index: number) => (
             <p key={index} className="text-sm text-gray-600 flex justify-between">
               <span className="flex items-center">
                 <span 

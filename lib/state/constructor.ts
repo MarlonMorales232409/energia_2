@@ -506,7 +506,7 @@ export const useConstructorStore = create<ConstructorState>((set, get) => ({
             ...client,
             hasCustomConfig: result.success && result.config !== null,
           };
-        } catch (error) {
+        } catch (_error) {
           return {
             ...client,
             hasCustomConfig: false,

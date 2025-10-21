@@ -1,5 +1,5 @@
 // System Validation Service
-import { ReportConfig, ChartComponent, DataSource, ValidationError } from '../types/constructor';
+import { ReportConfig } from '../types/constructor';
 import { ReportPersistenceService } from './report-persistence';
 import { DemoInitializationService } from './demo-initialization';
 import { useConstructorStore } from '../state/constructor';
@@ -340,7 +340,7 @@ export class SystemValidationService {
 
     // Test memory usage (basic check)
     try {
-      const memoryInfo = (performance as any).memory;
+      const memoryInfo = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
       if (memoryInfo) {
         const usedMemoryMB = memoryInfo.usedJSHeapSize / 1024 / 1024;
         
@@ -361,7 +361,7 @@ export class SystemValidationService {
           severity: 'info',
         });
       }
-    } catch (error) {
+    } catch (_error) {
       checks.push({
         name: 'Memory Usage',
         passed: true,

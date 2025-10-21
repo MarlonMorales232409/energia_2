@@ -27,20 +27,25 @@ import {
   Filter,
   ExternalLink,
   AlertCircle,
-  BarChart3,
   TrendingUp,
   Clock,
-  Users,
   Building2,
   Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function BackofficeEnlacesCompartidosPage() {
+  interface Analytics {
+    totalLinks: number;
+    activeLinks: number;
+    totalAccesses: number;
+    expiredLinks: number;
+  }
+
   const { user } = useAuthStore();
   const [links, setLinks] = useState<SharedLink[]>([]);
   const [filteredLinks, setFilteredLinks] = useState<SharedLink[]>([]);
-  const [analytics, setAnalytics] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'expired' | 'revoked'>('all');

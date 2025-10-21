@@ -9,7 +9,7 @@ interface MockConstructorState {
   isLoading: boolean;
   isSaving: boolean;
   error: string | null;
-  validationErrors: any[];
+  validationErrors: Array<{ type: string; message: string; spaceId?: string; componentId?: string }>;
   autoSaveEnabled: boolean;
 }
 
@@ -177,7 +177,7 @@ class MockConstructorStore {
   validateConfig() {
     if (!this.state.currentConfig) return [];
 
-    const errors: any[] = [];
+    const errors: Array<{ type: string; message: string; spaceId?: string; componentId?: string }> = [];
 
     // Basic validation
     if (!this.state.currentConfig.name?.trim()) {
@@ -502,7 +502,7 @@ describe('Constructor Store', () => {
 
     it('should remove grid space and reorder remaining spaces', () => {
       // First verify we have 3 spaces
-      let state = store.getState();
+      const state = store.getState();
       expect(state.currentConfig?.spaces).toHaveLength(3);
       
       const middleSpaceId = state.currentConfig?.spaces[1]?.id;

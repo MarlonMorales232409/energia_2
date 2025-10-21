@@ -73,9 +73,9 @@ vi.mock('@/lib/utils/localStorage', () => ({
 }));
 
 // Mock window events
-const mockEventListeners: Record<string, Function[]> = {};
+const mockEventListeners: Record<string, EventListener[]> = {};
 Object.defineProperty(window, 'addEventListener', {
-  value: vi.fn((event: string, callback: Function) => {
+  value: vi.fn((event: string, callback: EventListener) => {
     if (!mockEventListeners[event]) {
       mockEventListeners[event] = [];
     }
@@ -84,7 +84,7 @@ Object.defineProperty(window, 'addEventListener', {
 });
 
 Object.defineProperty(window, 'removeEventListener', {
-  value: vi.fn((event: string, callback: Function) => {
+  value: vi.fn((event: string, callback: EventListener) => {
     if (mockEventListeners[event]) {
       const index = mockEventListeners[event].indexOf(callback);
       if (index > -1) {

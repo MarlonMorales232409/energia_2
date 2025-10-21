@@ -33,7 +33,7 @@ const defaultFilters: ReportFilters = {
   viewMode: 'aggregated',
 };
 
-export const useReportsStore = create<ReportsState>((set, get) => ({
+export const useReportsStore = create<ReportsState>((set, _get) => ({
   currentReport: null,
   filteredReports: [],
   filters: defaultFilters,

@@ -23,9 +23,9 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock window events
-const mockEventListeners: Record<string, Function[]> = {};
-Object.defineProperty(window, 'addEventListener', {
-  value: jest.fn((event: string, callback: Function) => {
+const mockEventListeners: Record<string, EventListener[]> = {};
+Object.defineProperty(window, 'addEventListener', {  
+  value: jest.fn((event: string, callback: EventListener) => {
     if (!mockEventListeners[event]) {
       mockEventListeners[event] = [];
     }
@@ -34,7 +34,7 @@ Object.defineProperty(window, 'addEventListener', {
 });
 
 Object.defineProperty(window, 'removeEventListener', {
-  value: jest.fn((event: string, callback: Function) => {
+  value: jest.fn((event: string, callback: EventListener) => {
     if (mockEventListeners[event]) {
       const index = mockEventListeners[event].indexOf(callback);
       if (index > -1) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, Building2, Users, FileText, Eye, Edit, MoreHorizontal, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,12 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Company, User, ReportData } from '@/lib/types';
+import { Company } from '@/lib/types';
 import { getMockData, getUsersForCompany, getReportsForCompany } from '@/lib/mock/data/seeds';
 import { SimulationManager } from '@/lib/mock/simulators/delays';
 import { useRouter } from 'next/navigation';
 import { CompanyFormDialog } from '@/components/forms/company-form-dialog';
-import { toast } from 'sonner';
 
 interface CompanyWithStats extends Company {
   userCount: number;
@@ -27,15 +26,11 @@ export default function CompaniesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isCompanyDialogOpen, setIsCompanyDialogOpen] = useState(false);
-  const router = useRouter();
+  const _router = useRouter();
 
   useEffect(() => {
     loadCompanies();
   }, []);
-
-  useEffect(() => {
-    filterCompanies();
-  }, [companies, searchTerm]);
 
   // Listen for company creation events
   useEffect(() => {
@@ -73,7 +68,7 @@ export default function CompaniesPage() {
     setIsLoading(false);
   };
 
-  const filterCompanies = () => {
+  const filterCompanies = useCallback(() => {
     if (!searchTerm.trim()) {
       setFilteredCompanies(companies);
       return;
@@ -84,7 +79,11 @@ export default function CompaniesPage() {
       company.contactEmail.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCompanies(filtered);
-  };
+  }, [companies, searchTerm]);
+
+  useEffect(() => {
+    filterCompanies();
+  }, [filterCompanies]);
 
   const handleViewCompany = (companyId: string) => {
     // Demo: Mostrar mensaje en lugar de navegar

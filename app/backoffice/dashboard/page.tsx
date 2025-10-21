@@ -20,10 +20,10 @@ interface UploadedFile {
 }
 
 export default function BackofficeDashboardPage() {
-  const router = useRouter();
+  const _router = useRouter();
   const [showProcessingModal, setShowProcessingModal] = useState(false);
   const [currentFile, setCurrentFile] = useState<UploadedFile | null>(null);
-  const fileUploadRef = useRef<any>(null);
+  const fileUploadRef = useRef<HTMLInputElement>(null);
 
   const handleFileProcessed = (file: UploadedFile) => {
     setCurrentFile(file);
@@ -37,11 +37,11 @@ export default function BackofficeDashboardPage() {
     });
     // Agregar el archivo procesado a la lista de jobs en localStorage
     const now = new Date();
-    const newJob = {
+    const newJob: ProcessingJob = {
       id: `job-${now.getTime()}`,
       fileName: currentFile.name,
       fileSize: currentFile.size,
-      status: 'completed',
+      status: 'completed' as const,
       steps: [
         { name: 'Extrayendo datos', status: 'completed', duration: 1000 },
         { name: 'Mapeando información', status: 'completed', duration: 1000 },
@@ -56,14 +56,14 @@ export default function BackofficeDashboardPage() {
     };
     let mockData = LocalStorageManager.getMockData();
     if (!mockData || typeof mockData !== 'object') mockData = {};
-    const dataObj = mockData as Record<string, any>;
+    const dataObj = mockData as Record<string, unknown> & { processingJobs?: ProcessingJob[] };
     if (!('processingJobs' in dataObj) || !Array.isArray(dataObj.processingJobs)) {
       dataObj.processingJobs = [];
     }
     dataObj.processingJobs = [newJob, ...dataObj.processingJobs];
     LocalStorageManager.setMockData(dataObj);
-    if (fileUploadRef.current && fileUploadRef.current.reset) {
-      fileUploadRef.current.reset();
+    if (fileUploadRef.current) {
+      fileUploadRef.current.value = '';
     }
     setCurrentFile(null);
   };

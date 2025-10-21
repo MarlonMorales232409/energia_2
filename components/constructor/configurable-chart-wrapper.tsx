@@ -17,12 +17,12 @@ interface ConfigurableChartWrapperProps {
 function transformGenerationMixData(component: ChartComponent) {
   const { dataSource } = component;
   if (dataSource.sampleData && dataSource.sampleData.length > 0) {
-    const data = dataSource.sampleData[0];
+    const data = dataSource.sampleData[0] as Record<string, unknown>;
     return {
-      thermal: data.thermal || 0,
-      hydraulic: data.hydraulic || 0,
-      nuclear: data.nuclear || 0,
-      renewable: data.renewable || 0,
+      thermal: typeof data.thermal === 'number' ? data.thermal : 0,
+      hydraulic: typeof data.hydraulic === 'number' ? data.hydraulic : 0,
+      nuclear: typeof data.nuclear === 'number' ? data.nuclear : 0,
+      renewable: typeof data.renewable === 'number' ? data.renewable : 0,
     };
   }
   return { thermal: 45, hydraulic: 25, nuclear: 15, renewable: 15 };
@@ -30,11 +30,24 @@ function transformGenerationMixData(component: ChartComponent) {
 
 function transformDemandTrendData(component: ChartComponent) {
   const { dataSource } = component;
-  return dataSource.sampleData || [
-    { month: 'Ene', demand: 1200, variation: 5.2 },
-    { month: 'Feb', demand: 1150, variation: -2.1 },
-    { month: 'Mar', demand: 1300, variation: 8.7 },
+  const defaultData = [
+    { month: 'Ene', demand: 1200, monthlyDemand: 1200 },
+    { month: 'Feb', demand: 1150, monthlyDemand: 1150 },
+    { month: 'Mar', demand: 1300, monthlyDemand: 1300 },
   ];
+  
+  if (dataSource.sampleData && Array.isArray(dataSource.sampleData)) {
+    return dataSource.sampleData.map((item: unknown) => {
+      const data = item as Record<string, unknown>;
+      return {
+        month: typeof data.month === 'string' ? data.month : 'N/A',
+        demand: typeof data.demand === 'number' ? data.demand : 0,
+        monthlyDemand: typeof data.monthlyDemand === 'number' ? data.monthlyDemand : (typeof data.demand === 'number' ? data.demand : 0),
+      };
+    });
+  }
+  
+  return defaultData;
 }
 
 function transformCostComparisonData(component: ChartComponent) {
@@ -49,9 +62,9 @@ function transformCostComparisonData(component: ChartComponent) {
   const memCosts = [
     { 
       month: '2024-01', 
-      cammesa: costData.find((d: any) => d.category === 'CAMMESA')?.cost || 45.2,
-      plus: costData.find((d: any) => d.category === 'PLUS')?.cost || 38.7,
-      renewable: costData.find((d: any) => d.category === 'Renovable')?.cost || 42.1
+      cammesa: (costData.find((d: Record<string, unknown>) => d.category === 'CAMMESA') as { cost?: number })?.cost || 45.2,
+      plus: (costData.find((d: Record<string, unknown>) => d.category === 'PLUS') as { cost?: number })?.cost || 38.7,
+      renewable: (costData.find((d: Record<string, unknown>) => d.category === 'Renovable') as { cost?: number })?.cost || 42.1
     }
   ];
   
